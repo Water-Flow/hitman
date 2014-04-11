@@ -16,11 +16,11 @@ function InitHitman()
             SetPlayerHitman(ply, false)
         end
     end
-	for _, ply in pairs(GetTraitors()) do
+    for _, ply in pairs(GetTraitors()) do
         SetTraitorTarget(ply)
-		SetKilledCivs(ply, 0)
-		SetKilledTargets(ply, 0)
-		SetPlayerHitman(ply, true)
+        SetKilledCivs(ply, 0)
+        SetKilledTargets(ply, 0)
+        SetPlayerHitman(ply, true)
     end
 end
 hook.Add("TTTBeginRound", "InitHitman", InitHitman)
@@ -195,3 +195,5 @@ function DisableAllTargets()
     umsg.Start("hitman_notarget")
     umsg.End()
 end
+hook.Add("TTTPrepareRound", "Reset1", DisableAllTargets)
+hook.Add("TTTEndRound", "Reset2", DisableAllTargets)
