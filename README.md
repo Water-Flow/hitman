@@ -5,6 +5,9 @@ Trouble in Terrorist Town: Hitman Modification
 
 As a hitman you always have one target at a time. When you eliminate it you are assigned a new one, until your contract is fullfilled or you are killed in action. You have to avoid killing civilian bystanders. Killing more civilians than eliminated targets will result in your employer breaking up the contract and punishing you.
 
-Trouble in Terrorist Town created by BadKingUrgrain: http://ttt.badking.net/
+Possible Punishments can be (depends on cvar "hitman_punishment"):  
+-Being eliminated by your employer through a neural killswitch  
+-Your cover being blown through an anonymous phonecall  
 
+Trouble in Terrorist Town created by BadKingUrgrain: http://ttt.badking.net/  
 Modified by Mezzokoko
