@@ -88,18 +88,17 @@ end
 hook.Add("PlayerDisconnected", "CheckDisconnectedPlayer", CheckDisconnectedPlayer)
 
 function ReassignTarget(ply)
-    local t = ply:IsTraitor()
     --Add Target back to pool
-    if t then
+    if ply:IsTraitor() then
         --Check if a Traitor is without a target
 		local assigned = false
         for _, v in pairs(GetTraitors()) do
-            if !assigned && v:Alive() && traitor_targets[v:Nick()] == nil then
-			    traitor_targets[ply:Nick()] = nil
+            if !assigned and v:Alive() and traitor_targets[v:Nick()] == nil then
 				SetTraitorTarget(v)
 				assigned = true
             end
         end
+		traitor_targets[ply:Nick()] = nil
         umsg.Start("hitman_notarget", ply)
         umsg.End()
 	else
@@ -179,6 +178,15 @@ end
 hook.Add("TTTPrepareRound", "Reset1", DisableAllTargets)
 hook.Add("TTTEndRound", "Reset2", DisableAllTargets)
 
+--Sleeper Hitman Hook
+function onSleeper(ply)
+    SetTraitorTarget(ply)
+    SetKilledCivs(ply, 0)
+    SetKilledTargets(ply, 0)
+    SetPlayerHitman(ply, true)
+end
+hook.Add("SleeperHitman", "onSleeper", onSleeper)
+
 --For Debugging Purposes, will be removed on release
 function PrintTargets()
     print("Targets")
@@ -190,7 +198,7 @@ concommand.Add("hitman_print_targets", PrintTargets)
 
 function PrintPool()
     print("Potential Targets")
-    for _, ply in pairs(target_pool) do
+    for _, ply in pairs(GetTargetPool()) do
         print(ply:Nick())
     end
 end
