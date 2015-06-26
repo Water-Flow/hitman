@@ -6,7 +6,8 @@ if CLIENT then
    SWEP.PrintName			= "M16"
    SWEP.Slot				= 2
 
-   SWEP.Icon = "VGUI/ttt/icon_m16"
+   SWEP.Icon = "vgui/ttt/icon_m16"
+   SWEP.IconLetter = "w"
 end
 
 SWEP.Base				= "weapon_tttbase"
@@ -54,7 +55,7 @@ function SWEP:SecondaryAttack()
    if not self.IronSightsPos then return end
    if self:GetNextSecondaryFire() > CurTime() then return end
 
-   bIronsights = not self:GetIronsights()
+   local bIronsights = not self:GetIronsights()
 
    self:SetIronsights( bIronsights )
 

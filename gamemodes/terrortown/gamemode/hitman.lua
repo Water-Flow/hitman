@@ -7,7 +7,6 @@ CreateConVar("hitman_punishment", 1)
 
 --Set up the initial tables and give each T a target
 function InitHitman()
-    GetPotentialTargets()
     traitor_targets = {}
     traitor_killed_civs = {}
     for _, ply in pairs(player.GetAll()) do
@@ -26,13 +25,12 @@ end
 hook.Add("TTTBeginRound", "InitHitman", InitHitman)
 
 --Create table with all living innocents
-function GetPotentialTargets()
-    target_pool = {}
-    for _, ply in pairs(player.GetAll()) do
-        if not ply:IsTraitor() and ply:Alive() and not ply:IsSpec() then
-            AddToPool(ply)
-        end
-    end
+function GetTargetPool()
+	local target_pool = {}
+	for _, ply in pairs(player.GetAll()) do
+		if not ply:IsTraitor() and ply:Alive() and not ply:IsSpec() and GetAssignedHitman(ply) == nil then table.insert(target_pool, ply)	end
+	end
+	return target_pool
 end
 
 function AddToPool(ply)
@@ -41,11 +39,11 @@ end
 
 --Select Target and inform player
 function SetTraitorTarget(traitor)
-	if #target_pool > 0 then
-	    local pick = PickFromPool()
+	if #GetTargetPool() > 0 then
+	    local pick = table.Random(GetTargetPool())
         traitor_targets[traitor:Nick()] = pick:Nick()
         umsg.Start("hitman_newtarget", traitor)
-		umsg.Entity(pick)
+		umsg.String(pick:Nick())
         umsg.End()
     else
 	    traitor_targets[traitor:Nick()] = nil
@@ -54,21 +52,6 @@ function SetTraitorTarget(traitor)
     end
 end
 
---Rewrite the whole table and leave the desired player out
-function RemoveFromPool(ply)
-    local temp = {}
-    for _, v in pairs(target_pool) do
-        if v:Nick() != ply:Nick() then table.insert(temp, v) end
-    end
-    target_pool = temp
-end
-
---Pick and remove from pool
-function PickFromPool()
-	local pick = table.Random(target_pool)
-    RemoveFromPool(pick)
-    return pick
-end
 
 --Needed for Death- and Disconnectevents
 function GetAssignedHitman(target_ply)
@@ -108,23 +91,21 @@ function ReassignTarget(ply)
     local t = ply:IsTraitor()
     --Add Target back to pool
     if t then
-        AddToPool(PlayerByName(traitor_targets[ply:Nick()]))
         --Check if a Traitor is without a target
 		local assigned = false
         for _, v in pairs(GetTraitors()) do
             if !assigned && v:Alive() && traitor_targets[v:Nick()] == nil then
-			    SetTraitorTarget(v)
+			    traitor_targets[ply:Nick()] = nil
+				SetTraitorTarget(v)
 				assigned = true
             end
         end
-        traitor_targets[ply:Nick()] = nil
         umsg.Start("hitman_notarget", ply)
         umsg.End()
 	else
 	    if GetAssignedHitman(ply) != nil then
             SetTraitorTarget(GetAssignedHitman(ply))
         end
-		RemoveFromPool(ply)
     end
     -- Give Assigned Hitman a new target
 end
@@ -197,3 +178,20 @@ function DisableAllTargets()
 end
 hook.Add("TTTPrepareRound", "Reset1", DisableAllTargets)
 hook.Add("TTTEndRound", "Reset2", DisableAllTargets)
+
+--For Debugging Purposes, will be removed on release
+function PrintTargets()
+    print("Targets")
+    for _, ply in pairs(GetTraitors()) do
+        if ply:Alive() then print(ply:Nick() .. " ; " .. traitor_targets[ply:Nick()]) end
+    end
+end
+concommand.Add("hitman_print_targets", PrintTargets)
+
+function PrintPool()
+    print("Potential Targets")
+    for _, ply in pairs(target_pool) do
+        print(ply:Nick())
+    end
+end
+concommand.Add("hitman_print_pool", PrintPool)

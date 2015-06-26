@@ -16,7 +16,7 @@ if CLIENT then
       desc = "tele_desc"
    };
 
-   SWEP.Icon = "VGUI/ttt/icon_tport"
+   SWEP.Icon = "vgui/ttt/icon_tport"
 end
 
 SWEP.Base = "weapon_tttbase"
@@ -89,13 +89,14 @@ end
 local zap = Sound("ambient/levels/labs/electric_explosion4.wav")
 local unzap = Sound("ambient/levels/labs/electric_explosion2.wav")
 
-local function Telefrag(victim, attacker)
+local function Telefrag(victim, attacker, weapon)
    if not IsValid(victim) then return end
 
    local dmginfo = DamageInfo()
    dmginfo:SetDamage(5000)
    dmginfo:SetDamageType(DMG_SONIC)
    dmginfo:SetAttacker(attacker)
+   dmginfo:SetInflictor(weapon)
    dmginfo:SetDamageForce(Vector(0,0,10))
    dmginfo:SetDamagePosition(attacker:GetPos())
 
@@ -197,7 +198,7 @@ local function CanTeleportToPos(ply, pos)
    return false, nil
 end
 
-local function DoTeleport(ply, teleport)
+local function DoTeleport(ply, teleport, weapon)
    if IsValid(ply) and ply:IsTerror() and teleport then
       local fail = false
 
@@ -210,7 +211,7 @@ local function DoTeleport(ply, teleport)
          -- if blocked by player, maybe telefrag
          if ttt_telefrags:GetBool() then
             for _, p in pairs(block_plys) do
-               Telefrag(p, ply)
+               Telefrag(p, ply, weapon)
             end
          else
             fail = true
@@ -230,13 +231,13 @@ local function DoTeleport(ply, teleport)
    end
 end
 
-local function StartTeleport(ply, teleport)
+local function StartTeleport(ply, teleport, weapon)
    if (not IsValid(ply)) or (not ply:IsTerror()) or (not teleport) then
       return end
 
    teleport.ang = ply:EyeAngles()
 
-   timer.Simple(delay_beamup, function() DoTeleport(ply, teleport) end)
+   timer.Simple(delay_beamup, function() DoTeleport(ply, teleport, weapon) end)
 
    local ang = ply:GetAngles()
 
@@ -251,12 +252,12 @@ local function StartTeleport(ply, teleport)
    util.Effect("teleport_beamup", edata_up)
 
    local edata_dn = EffectData()
-   edata_up:SetOrigin(teleport.pos)
+   edata_dn:SetOrigin(teleport.pos)
    ang = Angle(0, ang.y, ang.r) -- deep copy
-   edata_up:SetAngles(ang)
-   edata_up:SetEntity(ply)
-   edata_up:SetMagnitude(delay_beamup)
-   edata_up:SetRadius(delay_beamdown)
+   edata_dn:SetAngles(ang)
+   edata_dn:SetEntity(ply)
+   edata_dn:SetMagnitude(delay_beamup)
+   edata_dn:SetRadius(delay_beamdown)
 
    util.Effect("teleport_beamdown", edata_dn)
 end
@@ -282,7 +283,7 @@ function SWEP:TeleportRecall(ply)
 
          self:TakePrimaryAmmo(1)
 
-         timer.Simple(0.2, function() StartTeleport(ply, mark) end)
+         timer.Simple(0.2, function() StartTeleport(ply, mark, self) end)
       else
          LANG.Msg(ply, "tele_no_mark")
       end

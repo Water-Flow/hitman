@@ -15,7 +15,7 @@ if CLIENT then
       desc = "dna_desc"
    };
 
-   SWEP.Icon = "VGUI/ttt/icon_wtester"
+   SWEP.Icon = "vgui/ttt/icon_wtester"
 end
 
 SWEP.Base = "weapon_tttbase"
@@ -421,7 +421,7 @@ if CLIENT then
       end
    end
 
-   local basedir = "VGUI/ttt/icon_"
+   local basedir = "vgui/ttt/icon_"
    local function GetDisplayData(cls)
       local wep = util.WeaponForClass(cls)
 
@@ -694,7 +694,7 @@ if CLIENT then
       end
 
       if should_open then
-         if ValidPanel(printspanel) then
+         if IsValid(printspanel) then
             printspanel:Remove()
          end
 
@@ -702,7 +702,7 @@ if CLIENT then
 
          printspanel = ShowPrintsPopup(item_prints, tester)
       else
-         if ValidPanel(printspanel) then
+         if IsValid(printspanel) then
             printspanel:UpdatePrints(item_prints)
          end
       end
@@ -733,7 +733,7 @@ if CLIENT then
    net.Receive("TTT_ScanResult", RecvScan)
 
    function SWEP:ClosePrintsPanel()
-      if ValidPanel(printspanel) then
+      if IsValid(printspanel) then
          printspanel:Close()
       end
    end

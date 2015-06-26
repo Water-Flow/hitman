@@ -4,8 +4,8 @@
 include("sb_row.lua")
 
 local function CompareScore(pa, pb)
-   if not ValidPanel(pa) then return false end
-   if not ValidPanel(pb) then return true end
+   if not IsValid(pa) then return false end
+   if not IsValid(pb) then return true end
 
    local a = pa:GetPlayer()
    local b = pb:GetPlayer()
@@ -76,9 +76,12 @@ function PANEL:Paint()
    local scr = sboard_panel.ply_frame.scroll.Enabled and 16 or 0
    surface.SetDrawColor(0,0,0, 80)
    if sboard_panel.cols then
-      -- Draw for odd numbered columns
-      for i=1, #sboard_panel.cols, 2 do
-         surface.DrawRect(self:GetWide() - (50*i) - 25 - scr, 0, 50, self:GetTall())
+      local cx = self:GetWide() - scr
+      for k,v in ipairs(sboard_panel.cols) do
+         cx = cx - v.Width
+         if k % 2 == 1 then -- Draw for odd numbered columns
+            surface.DrawRect(cx-v.Width/2, 0, v.Width, self:GetTall())
+         end
       end
    else
       -- If columns are not setup yet, fall back to darkening the areas for the
@@ -124,7 +127,7 @@ function PANEL:UpdatePlayerData()
    local to_remove = {}
    for k,v in pairs(self.rows) do
       -- Player still belongs in this group?
-      if ValidPanel(v) and IsValid(v:GetPlayer()) and ScoreGroup(v:GetPlayer()) == self.group then
+      if IsValid(v) and IsValid(v:GetPlayer()) and ScoreGroup(v:GetPlayer()) == self.group then
          v:UpdatePlayerData()
       else
          -- can't remove now, will break pairs
@@ -136,7 +139,7 @@ function PANEL:UpdatePlayerData()
 
    for k,ply in pairs(to_remove) do
       local pnl = self.rows[ply]
-      if ValidPanel(pnl) then
+      if IsValid(pnl) then
          pnl:Remove()
       end
 

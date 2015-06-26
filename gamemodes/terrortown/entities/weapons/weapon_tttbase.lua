@@ -34,18 +34,18 @@ if CLIENT then
 
    -- This sets the icon shown for the weapon in the DNA sampler, search window,
    -- equipment menu (if buyable), etc.
-   SWEP.Icon = "VGUI/ttt/icon_nades" -- most generic icon I guess
+   SWEP.Icon = "vgui/ttt/icon_nades" -- most generic icon I guess
 
    -- You can make your own weapon icon using the template in:
    --   /garrysmod/gamemodes/terrortown/template/
 
    -- Open one of TTT's icons with VTFEdit to see what kind of settings to use
    -- when exporting to VTF. Once you have a VTF and VMT, you can
-   -- resource.AddFile("materials/VGUI/...") them here. GIVE YOUR ICON A UNIQUE
+   -- resource.AddFile("materials/vgui/...") them here. GIVE YOUR ICON A UNIQUE
    -- FILENAME, or it WILL be overwritten by other servers! Gmod does not check
    -- if the files are different, it only looks at the name. I recommend you
    -- create your own directory so that this does not happen,
-   -- eg. /materials/VGUI/ttt/mycoolserver/mygun.vmt
+   -- eg. /materials/vgui/ttt/mycoolserver/mygun.vmt
 end
 
 ---- MISC TTT-SPECIFIC BEHAVIOUR CONFIGURATION
@@ -140,8 +140,8 @@ if CLIENT then
 
       local sights = (not self.NoSights) and self:GetIronsights()
 
-      local x = ScrW() / 2.0
-      local y = ScrH() / 2.0
+      local x = math.floor(ScrW() / 2.0)
+      local y = math.floor(ScrH() / 2.0)
       local scale = math.max(0.2,  10 * self:GetPrimaryCone())
 
       local LastShootTime = self:LastShootTime()
@@ -164,8 +164,8 @@ if CLIENT then
                               255 * alpha)
       end
 
-      local gap = 20 * scale * (sights and 0.8 or 1)
-      local length = gap + (25 * crosshair_size:GetFloat()) * scale
+      local gap = math.floor(20 * scale * (sights and 0.8 or 1))
+      local length = math.floor(gap + (25 * crosshair_size:GetFloat()) * scale)
       surface.DrawLine( x - length, y, x - gap, y )
       surface.DrawLine( x + length, y, x + gap, y )
       surface.DrawLine( x, y - length, x, y - gap )
@@ -336,7 +336,6 @@ end
 function SWEP:GetPrimaryCone()
    local cone = self.Primary.Cone or 0.2
    -- 10% accuracy bonus when sighting
-    if self:GetIronsights() and self.Secondary.Cone then return self.Secondary.Cone end
    return self:GetIronsights() and (cone * 0.85) or cone
 end
 
@@ -476,8 +475,8 @@ function SWEP:Initialize()
    self:SetDeploySpeed(self.DeploySpeed)
 
    -- compat for gmod update
-   if self.SetWeaponHoldType then
-      self:SetWeaponHoldType(self.HoldType or "pistol")
+   if self.SetHoldType then
+      self:SetHoldType(self.HoldType or "pistol")
    end
 end
 

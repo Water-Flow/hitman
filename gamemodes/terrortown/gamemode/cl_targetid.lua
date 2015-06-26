@@ -26,7 +26,7 @@ end
 
 ---- "T" indicator above traitors
 
-local indicator_mat = Material("VGUI/ttt/sprite_traitor")
+local indicator_mat = Material("vgui/ttt/sprite_traitor")
 local indicator_col = Color(255, 255, 255, 130)
 
 local client, plys, ply, pos, dir, tgt
@@ -187,6 +187,7 @@ function GM:HUDDrawTargetID()
          client.last_id = ent
       end
 
+      local _ -- Stop global clutter
       -- in minimalist targetID, colour nick with health level
       if minimal then
          _, color = util.HealthToString(ent:Health())

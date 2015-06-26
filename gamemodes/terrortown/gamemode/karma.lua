@@ -62,8 +62,10 @@ function KARMA.GetKillReward()
    return KARMA.GetHurtReward(config.tbonus:GetFloat())
 end
 
-function KARMA.GivePenalty(ply, penalty)
-   ply:SetLiveKarma(math.max(ply:GetLiveKarma() - penalty, 0))
+function KARMA.GivePenalty(ply, penalty, victim)
+        if not hook.Call( "TTTKarmaGivePenalty", nil, ply, penalty, victim ) then
+                ply:SetLiveKarma(math.max(ply:GetLiveKarma() - penalty, 0))
+        end
 end
 
 function KARMA.GiveReward(ply, reward)
@@ -94,14 +96,11 @@ function KARMA.ApplyKarma(ply)
    end
 end
 
--- Return true if a traitor could have avoided the damage/death
+-- Return true if a traitor could have easily avoided the damage/death
 local function WasAvoidable(attacker, victim, dmginfo)
-   -- C4 deaths are avoidable for traitors, indicated on HUD
-   if attacker:IsTraitor() and victim:IsTraitor() and dmginfo:IsExplosionDamage() then
-      local infl = dmginfo:GetInflictor()
-      if IsValid(infl) and infl:GetClass() == "ttt_c4" then
-         return true
-      end
+   local infl = dmginfo:GetInflictor()
+   if attacker:IsTraitor() and victim:IsTraitor() and IsValid(infl) and infl.Avoidable then
+      return true
    end
 
    return false
@@ -123,7 +122,7 @@ function KARMA.Hurt(attacker, victim, dmginfo)
 
       local penalty = KARMA.GetHurtPenalty(victim:GetLiveKarma(), hurt_amount)
 
-      KARMA.GivePenalty(attacker, penalty)
+      KARMA.GivePenalty(attacker, penalty, victim)
 
       attacker:SetCleanRound(false)
 
@@ -153,7 +152,7 @@ function KARMA.Killed(attacker, victim, dmginfo)
 
       local penalty = KARMA.GetKillPenalty(victim:GetLiveKarma())
 
-      KARMA.GivePenalty(attacker, penalty)
+      KARMA.GivePenalty(attacker, penalty, victim)
 
       attacker:SetCleanRound(false)
 

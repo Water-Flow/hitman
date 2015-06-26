@@ -22,7 +22,7 @@ surface.CreateFont("treb_small", {font = "Trebuchet18",
                                   size = 14,
                                   weight = 700})
 
-local logo = surface.GetTextureID("VGUI/ttt/score_logo")
+local logo = surface.GetTextureID("vgui/ttt/score_logo")
 
 local PANEL = {}
 
@@ -49,8 +49,20 @@ GROUP_SPEC = 4
 
 GROUP_COUNT = 4
 
+function AddScoreGroup(name) -- Utility function to register a score group
+   if _G["GROUP_"..name] then error("Group of name '"..name.."' already exists!") return end
+   GROUP_COUNT = GROUP_COUNT + 1
+   _G["GROUP_"..name] = GROUP_COUNT
+end
+
 function ScoreGroup(p)
    if not IsValid(p) then return -1 end -- will not match any group panel
+
+   local group = hook.Call( "TTTScoreGroup", nil, p )
+
+   if group then -- If that hook gave us a group, use it
+      return group
+   end
 
    if DetectiveMode() then
       if p:IsSpec() and (not p:Alive()) then
@@ -118,6 +130,8 @@ function PANEL:Init()
       self.ply_groups[GROUP_FOUND] = t
    end
 
+   hook.Call( "TTTScoreGroups", nil, self.ply_frame:GetCanvas(), self.ply_groups )
+
    -- the various score column headers
    self.cols = {}
    self:AddColumn( GetTranslation("sb_ping") )
@@ -137,10 +151,11 @@ end
 
 -- For headings only the label parameter is relevant, func is included for
 -- parity with sb_row
-function PANEL:AddColumn( label, func )
+function PANEL:AddColumn( label, func, width )
    local lbl = vgui.Create( "DLabel", self )
    lbl:SetText( label )
    lbl.IsHeading = true
+   lbl.Width = width or 50 -- Retain compatibility with existing code
 
    table.insert( self.cols, lbl )
    return lbl
@@ -185,7 +200,7 @@ function PANEL:PerformLayout()
    -- can't just use pairs (undefined ordering) or ipairs (group 2 and 3 might not exist)
    for i=1, GROUP_COUNT do
       local group = self.ply_groups[i]
-      if ValidPanel(group) then
+      if IsValid(group) then
          if group:HasRows() then
             group:SetVisible(true)
             group:SetPos(0, gy)
@@ -240,9 +255,11 @@ function PANEL:PerformLayout()
 
    -- score columns
    local cy = y_logo_off + 90
+   local cx = w - 8 -(scrolling and 16 or 0)
    for k,v in ipairs(self.cols) do
       v:SizeToContents()
-      v:SetPos( w - (50*k) - v:GetWide()/2 - 8 -(scrolling and 16 or 0), cy)
+      cx = cx - v.Width
+      v:SetPos(cx - v:GetWide()/2, cy)
    end
 end
 
@@ -279,7 +296,7 @@ function PANEL:UpdateScoreboard( force )
    end
 
    for k, group in pairs(self.ply_groups) do
-      if ValidPanel(group) then
+      if IsValid(group) then
          group:SetVisible( group:HasRows() )
          group:UpdatePlayerData()
       end

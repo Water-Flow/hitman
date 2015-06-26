@@ -5,7 +5,7 @@ local civkills = 0
 local alive
 local traitor
 
-local revealed = 0
+local revealed = false
 
 --for painting
 local x = 270
@@ -15,8 +15,7 @@ local w = 250
 local h = 120
 
 local function ReceiveTarget(um)
-    local ply = um:ReadEntity()
-	targetname = ply:Nick()
+	targetname = um:ReadString()
 end
 usermessage.Hook( "hitman_newtarget", ReceiveTarget )
 
@@ -26,12 +25,13 @@ end
 usermessage.Hook( "hitman_notarget", NoTarget )
 
 local function DisplayHitlistHUD()
-    if targetname ~= nil and alive and traitor then
+	if targetname ~= nil and alive and traitor then
 		--basic box
         draw.RoundedBox(8, x, y, w, h, Color(0, 0, 10, 200))
 		draw.RoundedBox(8, x, y, w, 30, Color(200, 25, 25, 200))
 		
 		--Didn't mind using BadKings ShadowedText. For some reason stuff doesn't properly import. Got to clean up the bloody code at some point anyway.
+		-- 26th June 2015: Still haven't, should get my lazy ass to do it some day
 		
 		--Target announcer
 		draw.SimpleText(targetname, "TraitorState", x + 12, y+2, Color(0, 0, 0, 255))
@@ -64,7 +64,7 @@ usermessage.Hook( "hitman_alive", SetAlive )
 local function SetTraitor(um)
     traitor = um:ReadBool()
 	if traitor then YouAreTraitor() end
-	revealed = 0
+	revealed = false
 end
 usermessage.Hook( "hitman_hitman", SetTraitor )
 
@@ -76,9 +76,9 @@ local function Disappointed(um)
     local punishment = um:ReadShort()
 	if punishment == 2 then
 	    chat.AddText(Color(255, 0, 0), "Your employer is very disappointed of your work and decided to activate the killswitch")
-	elseif punishment == 1 and revealed == 0 then
+	elseif punishment == 1 and !revealed then
 	    chat.AddText(Color(255, 0, 0), "As a result of breaking the contract with your employer he decided to blow your cover with an anonymous phone call.")
-		revealed = 1
+		revealed = true
 	end
 end
 usermessage.Hook( "hitman_disappointed", Disappointed )

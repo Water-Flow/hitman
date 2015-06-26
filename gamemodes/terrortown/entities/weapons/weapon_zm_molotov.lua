@@ -7,7 +7,8 @@ if CLIENT then
    SWEP.PrintName	 = "grenade_fire"
    SWEP.Slot		 = 3
 
-   SWEP.Icon = "VGUI/ttt/icon_nades"
+   SWEP.Icon = "vgui/ttt/icon_nades"
+   SWEP.IconLetter = "P"
 end
 
 SWEP.Base				= "weapon_tttbasegrenade"
@@ -29,4 +30,3 @@ SWEP.AutoSpawnable      = true
 function SWEP:GetGrenadeName()
    return "ttt_firegrenade_proj"
 end
-

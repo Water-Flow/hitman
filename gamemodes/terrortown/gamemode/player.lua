@@ -259,14 +259,13 @@ end
 
 function GM:TTTPlayerSetColor(ply)
    local clr = COLOR_WHITE
-   local should_color = hook.Call("TTTShouldColorModel", GAMEMODE, ply:GetModel())
-   if GAMEMODE.playercolor and should_color then
+   if GAMEMODE.playercolor then
       -- If this player has a colorable model, always use the same color as all
       -- other colorable players, so color will never be the factor that lets
       -- you tell players apart.
       clr = GAMEMODE.playercolor
    end
-   ply:SetColor(clr)
+   ply:SetPlayerColor( Vector( clr.r/255.0, clr.g/255.0, clr.b/255.0 ) )
 end
 
 
@@ -317,6 +316,7 @@ function GM:KeyPress(ply, key)
       if key == IN_ATTACK then
          -- snap to random guy
          ply:Spectate(OBS_MODE_ROAMING)
+         ply:SetEyeAngles(angle_zero) -- After exiting propspec, this could be set to awkward values
          ply:SpectateEntity(nil)
 
          local alive = util.GetAlivePlayers()
@@ -326,6 +326,7 @@ function GM:KeyPress(ply, key)
          local target = table.Random(alive)
          if IsValid(target) then
             ply:SetPos(target:EyePos())
+            ply:SetEyeAngles(target:EyeAngles())
          end
       elseif key == IN_ATTACK2 then
          -- spectate either the next guy or a random guy in chase
@@ -529,6 +530,8 @@ local function CheckCreditAward(victim, attacker)
    if (not victim:IsTraitor()) and (not GAMEMODE.AwardedCredits or GetConVar("ttt_credits_award_repeat"):GetBool()) then
       local inno_alive = 0
       local inno_dead = 0
+      local inno_total = 0
+      
       for _, ply in pairs(player.GetAll()) do
          if not ply:GetTraitor() then
             if ply:IsTerror() then
@@ -679,7 +682,7 @@ function GM:PlayerDeath( victim, infl, attacker)
 
    victim:Extinguish()
 
-   net.Start("TTT_PlayerDied") net.Send(ply)
+   net.Start("TTT_PlayerDied") net.Send(victim)
 
    if HasteMode() and GetRoundState() == ROUND_ACTIVE then
       IncRoundEnd(GetConVar("ttt_haste_minutes_per_death"):GetFloat() * 60)
@@ -930,6 +933,8 @@ function GM:PlayerTakeDamage(ent, infl, att, amount, dmginfo)
          -- barrel bangs can hurt us even if we threw them, but that's our fault
       elseif hurter and ent == hurter:GetPhysicsAttacker() and dmginfo:IsDamageType(DMG_BLAST) then
          owner = ent
+      elseif hurter and hurter:IsVehicle() and IsValid(hurter:GetDriver()) then
+         owner = hurter:GetDriver()
       end
 
 

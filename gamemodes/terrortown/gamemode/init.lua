@@ -394,7 +394,7 @@ local function CleanUp()
    end
 
    -- a different kind of cleanup
-   util.UnbridledHateForULX()
+   util.SafeRemoveHook("PlayerSay", "ULXMeCheck")
 end
 
 local function SpawnEntities()
@@ -669,6 +669,7 @@ function BeginRound()
    -- traitor, but for whatever reason does not get the traitor state msg. So
    -- re-send after a second just to make sure everyone is getting it.
    timer.Simple(1, SendFullStateUpdate)
+   timer.Simple(10, SendFullStateUpdate)
 
    SCORE:HandleSelection() -- log traitors and detectives
 
@@ -921,7 +922,7 @@ function SelectRoles()
    -- traitor, so becoming detective does not mean you lost a chance to be
    -- traitor
    local ds = 0
-   local min_karma = GetConVarNumber("ttt_detective_min_karma") or 0
+   local min_karma = GetConVarNumber("ttt_detective_karma_min") or 0
    while (ds < det_count) and (#choices >= 1) do
 
       -- sometimes we need all remaining choices to be detective to fill the

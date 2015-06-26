@@ -74,6 +74,8 @@ local function DrawTarget(tgt, size, offset, no_shrink)
 
    scrpos.x = math.Clamp(scrpos.x, sz, ScrW() - sz)
    scrpos.y = math.Clamp(scrpos.y, sz, ScrH() - sz)
+   
+   if IsOffScreen(scrpos) then return end
 
    surface.DrawTexturedRect(scrpos.x - sz, scrpos.y - sz, sz * 2, sz * 2)
 
@@ -105,9 +107,9 @@ local function DrawTarget(tgt, size, offset, no_shrink)
 end
 
 local indicator   = surface.GetTextureID("effects/select_ring")
-local c4warn      = surface.GetTextureID("VGUI/ttt/icon_c4warn")
-local sample_scan = surface.GetTextureID("VGUI/ttt/sample_scan")
-local det_beacon  = surface.GetTextureID("VGUI/ttt/det_beacon")
+local c4warn      = surface.GetTextureID("vgui/ttt/icon_c4warn")
+local sample_scan = surface.GetTextureID("vgui/ttt/sample_scan")
+local det_beacon  = surface.GetTextureID("vgui/ttt/det_beacon")
 
 local GetPTranslation = LANG.GetParamTranslation
 local FormatTime = util.SimpleTime
@@ -167,6 +169,9 @@ function RADAR:Draw(client)
       alpha = alpha_base
 
       scrpos = tgt.pos:ToScreen()
+      if not scrpos.visible then
+         continue
+      end
       md = mpos:Distance(Vector(scrpos.x, scrpos.y, 0))
       if md < near_cursor_dist then
          alpha = math.Clamp(alpha * (md / near_cursor_dist), 40, 230)
@@ -181,7 +186,7 @@ function RADAR:Draw(client)
          surface.SetDrawColor(0, 0, 255, alpha)
          surface.SetTextColor(0, 0, 255, alpha)
 
-      elseif role == -1 then -- decoys
+      elseif role == 3 then -- decoys
          surface.SetDrawColor(150, 150, 150, alpha)
          surface.SetTextColor(150, 150, 150, alpha)
 
@@ -230,11 +235,13 @@ net.Receive("TTT_CorpseCall", ReceiveCorpseCall)
 local function ReceiveRadarScan()
    local num_targets = net.ReadUInt(8)
    local hitmanscan = net.ReadBit() == 1
+
    if hitmanscan then
       RADAR.duration = 1
    else
       RADAR.duration = 30
    end
+   
    RADAR.targets = {}
    for i=1, num_targets do
       local r = net.ReadUInt(2)

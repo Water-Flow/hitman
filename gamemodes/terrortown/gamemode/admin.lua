@@ -25,7 +25,7 @@ local function TraitorSort(a,b)
 end
 
 function PrintTraitors(ply)
-   if (not IsValid(ply)) or ply:IsSuperAdmin() or (ULib and ULib.ucl.query(ply,"ttt_print_traitors")) then
+   if not IsValid(ply) or ply:IsSuperAdmin() then
       ServerLog(Format("%s used ttt_print_traitors\n", IsValid(ply) and ply:Nick() or "console"))
 
       local pr = GetPrintFn(ply)
@@ -38,8 +38,6 @@ function PrintTraitors(ply)
             pr(p:GetTraitor() and "TRAITOR" or "Innocent", ":", p:Nick())
          end
       end
-   elseif IsValid(ply) then 
-	pr("You do not appear to be RCON or an admin!")
    end
 end
 concommand.Add("ttt_print_traitors", PrintTraitors)
@@ -57,7 +55,7 @@ concommand.Add("ttt_print_usergroups", PrintGroups)
 function PrintReport(ply)
    local pr = GetPrintFn(ply)
 
-   if (not IsValid(ply)) or ply:IsSuperAdmin() or (ULib and ULib.ucl.query(ply,"ttt_print_adminreport")) then
+   if not IsValid(ply) or ply:IsSuperAdmin() then
       ServerLog(Format("%s used ttt_print_adminreport\n", IsValid(ply) and ply:Nick() or "console"))
 
       for k, e in pairs(SCORE.Events) do
@@ -80,7 +78,7 @@ concommand.Add("ttt_print_adminreport", PrintReport)
 local function PrintKarma(ply)
    local pr = GetPrintFn(ply)
 
-   if (not IsValid(ply)) or ply:IsSuperAdmin() (ULib and ULib.ucl.query(ply,"ttt_print_karma")) then
+   if (not IsValid(ply)) or ply:IsSuperAdmin() then
       ServerLog(Format("%s used ttt_print_karma\n", IsValid(ply) and ply:Nick() or "console"))
 
       KARMA.PrintAll(pr)
@@ -107,7 +105,7 @@ local dmglog_save    = CreateConVar("ttt_damagelog_save", "0")
 local function PrintDamageLog(ply)
    local pr = GetPrintFn(ply)
 
-   if (not IsValid(ply)) or ply:IsSuperAdmin() or GetRoundState() != ROUND_ACTIVE or (ULib and ULib.ucl.query(ply,"ttt_print_damagelog")) then
+   if (not IsValid(ply)) or ply:IsSuperAdmin() or GetRoundState() != ROUND_ACTIVE then
       ServerLog(Format("%s used ttt_print_damagelog\n", IsValid(ply) and ply:Nick() or "console"))
       pr("*** Damage log:\n")
 

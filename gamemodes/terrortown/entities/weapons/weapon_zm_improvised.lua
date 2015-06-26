@@ -8,7 +8,7 @@ if CLIENT then
 
    SWEP.Slot				= 0
 
-   SWEP.Icon = "VGUI/ttt/icon_cbar"   
+   SWEP.Icon = "vgui/ttt/icon_cbar"   
    SWEP.ViewModelFOV = 54
 end
 
@@ -142,8 +142,8 @@ function SWEP:PrimaryAttack()
          edata:SetStart(spos)
          edata:SetOrigin(tr_main.HitPos)
          edata:SetNormal(tr_main.Normal)
-
-         --edata:SetSurfaceProp(tr_main.MatType)
+         edata:SetSurfaceProp(tr_main.SurfaceProps)
+         edata:SetHitBox(tr_main.HitBox)
          --edata:SetDamageType(DMG_CLUB)
          edata:SetEntity(hitEnt)
 
@@ -220,6 +220,10 @@ function SWEP:SecondaryAttack()
    self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
    self.Weapon:SetNextSecondaryFire( CurTime() + 0.1 )
 
+   if self.Owner.LagCompensation then
+      self.Owner:LagCompensation(true)
+   end
+
    local tr = self.Owner:GetEyeTrace(MASK_SHOT)
 
    if tr.Hit and IsValid(tr.Entity) and tr.Entity:IsPlayer() and (self.Owner:EyePos() - tr.HitPos):Length() < 100 then
@@ -241,6 +245,10 @@ function SWEP:SecondaryAttack()
       self.Weapon:SendWeaponAnim( ACT_VM_HITCENTER )
 
       self.Weapon:SetNextSecondaryFire( CurTime() + self.Secondary.Delay )
+   end
+   
+   if self.Owner.LagCompensation then
+      self.Owner:LagCompensation(false)
    end
 end
 

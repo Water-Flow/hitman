@@ -9,7 +9,7 @@ end
 
 if CLIENT then
    -- this entity can be DNA-sampled so we need some display info
-   ENT.Icon = "VGUI/ttt/icon_c4"
+   ENT.Icon = "vgui/ttt/icon_c4"
    ENT.PrintName = "C4"
 
    local GetPTranslation = LANG.GetParamTranslation
@@ -31,6 +31,7 @@ ENT.Model = Model("models/weapons/w_c4_planted.mdl")
 
 ENT.CanHavePrints = true
 ENT.CanUseKey = true
+ENT.Avoidable = true
 
 AccessorFunc( ENT, "thrower", "Thrower")
 
@@ -355,6 +356,10 @@ function ENT:Think()
       local btime = (etime - CurTime()) / 30
       self.Beep = CurTime() + btime
    end
+end
+
+function ENT:Defusable()
+	return self:GetArmed()
 end
 
 -- Timer configuration handlign
