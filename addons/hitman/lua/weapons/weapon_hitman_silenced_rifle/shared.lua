@@ -27,20 +27,20 @@ SWEP.WeaponID = AMMO_RIFLE
 SWEP.CanBuy = {ROLE_TRAITOR} -- only traitors can buy
 SWEP.LimitedStock = true
 
-SWEP.Primary.Delay          = 1.5
+SWEP.Primary.Delay          = 0.5
 SWEP.Primary.Recoil         = 7
 SWEP.Primary.Automatic = true
 SWEP.Primary.Ammo = "357_s"
-SWEP.Primary.Damage = 1000
+SWEP.Primary.Damage = 200
 SWEP.Primary.Cone = 0.000
-SWEP.Primary.ClipSize = 5
+SWEP.Primary.ClipSize = 3
 SWEP.Primary.ClipMax = 0 -- keep mirrored to ammo
-SWEP.Primary.DefaultClip = 5
+SWEP.Primary.DefaultClip = 3
 
 SWEP.HeadshotMultiplier = 4
 
 SWEP.AutoSpawnable      = false
-SWEP.AmmoEnt = "item_ammo_357_ttt"
+SWEP.AmmoEnt = ""
 SWEP.IsSilent = true
 
 SWEP.UseHands			= true

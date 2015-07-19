@@ -1,6 +1,6 @@
 if SERVER then
     AddCSLuaFile( "shared.lua" )
-    resource.AddFile("materials/vgui/icon_hitman_remotemine.vmt")
+    resource.AddFile("materials/hitman/icon_hitman_remotemine.png")
 end
      
 SWEP.HoldType = "slam"
@@ -21,7 +21,7 @@ if CLIENT then
 		detectives.]]
     };
      
-    SWEP.Icon = "hitman/icon_remotemine"
+    SWEP.Icon = "hitman/icon_hitman_remotemine.png"
 end
 
 SWEP.Base               = "weapon_tttbase"
@@ -31,9 +31,9 @@ SWEP.WorldModel         = "models/weapons/w_slam.mdl"
 SWEP.FiresUnderwater = false
      
 SWEP.Primary.Sound      = Sound("")
-SWEP.Primary.Delay      = .5
-SWEP.Primary.ClipSize   = 2
-SWEP.Primary.DefaultClip = 2
+SWEP.Primary.Delay      = .1
+SWEP.Primary.ClipSize   = 3
+SWEP.Primary.DefaultClip = 3
 SWEP.Primary.Automatic  = false
 SWEP.Primary.Ammo       = "slam"
 SWEP.LimitedStock = true
