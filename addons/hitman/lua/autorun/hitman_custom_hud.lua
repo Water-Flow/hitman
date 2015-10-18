@@ -10,7 +10,7 @@ local height = 20
 
 local barcorner = surface.GetTextureID( "gui/corner8" )
 
--- Round status consts
+-- Round status consts, those dont seem to be accessable globally
 local ROUND_WAIT   = 1
 local ROUND_PREP   = 2
 local ROUND_ACTIVE = 3
@@ -212,13 +212,13 @@ hook.Add("HUDPaint", "HitmanWeaponSwitch", HitmanWeaponSwitch)
 
 local function DisplayHitlistHUD()
     client = LocalPlayer()
-    if targetname ~= nil and client:Alive() == true and client:GetRole() == ROLE_TRAITOR then
+    if hitman_targetname and client:Alive() and client:IsTraitor() then
         --Target announcer
-        draw.SimpleText("Kill " .. targetname, "HealthAmmo", ScrW()/2, ScrH() - 20, Color(128, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText("Kill " .. hitman_targetname, "HealthAmmo", ScrW()/2, ScrH() - 20, Color(128, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
         if sb_visible then
-            draw.SimpleText("Killed Targets: " .. targetkills, "HealthAmmo", 5, ScrH() - 40, Color(128, 0, 0), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+            draw.SimpleText("Killed Targets: " .. hitman_targetkills, "HealthAmmo", 5, ScrH() - 40, Color(128, 0, 0), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 
-            draw.SimpleText("Killed Bystanders: " .. civkills, "HealthAmmo", 5, ScrH() - 20, Color(128, 0, 0), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+            draw.SimpleText("Killed Bystanders: " .. hitman_civkills, "HealthAmmo", 5, ScrH() - 20, Color(128, 0, 0), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
         end
     end
 end
@@ -226,7 +226,8 @@ hook.Remove("DisplayHitlistHUD")
 hook.Add("HUDPaint", "DisplayHitlistHUD", DisplayHitlistHUD)
 
 function SimplisticHealthbar(health)
-    maxhealthbars = 25
+    if health > 100 then health = 100 end
+	maxhealthbars = 25
     local temp = ""
     for i = 1,(health/100)*maxhealthbars do
         temp = temp .. "|"
@@ -235,9 +236,7 @@ function SimplisticHealthbar(health)
 end
 
 function ShadowedText(text, font, x, y, color, xalign, yalign)
-
    dr.SimpleText(text, font, x+2, y+2, COLOR_BLACK, xalign, yalign)
-
    dr.SimpleText(text, font, x, y, color, xalign, yalign)
 end
 
