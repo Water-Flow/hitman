@@ -82,7 +82,7 @@ if SERVER then
             hitman_targets[ply:Nick()] = nil
             umsg.Start("hitman_notarget", ply)
             umsg.End()
-			--Check if a Traitor is without a target
+            --Check if a Traitor is without a target
             local assigned = false
             for _, v in pairs(GetTraitors()) do
                 if !assigned and v:Alive() and ply != v and not hitman_targets[v:Nick()] then
@@ -131,7 +131,7 @@ if SERVER then
         SetTraitorTarget(ply)
         SetKilledCivs(ply, 0)
         SetKilledTargets(ply, 0)
-		umsg.Start("hitman_hitman", ply)
+        umsg.Start("hitman_hitman", ply)
         umsg.End()
     end
 
@@ -282,7 +282,7 @@ else -- Client
 
             --Didn't mind using BadKings ShadowedText. For some reason stuff doesn't properly import. Got to clean up the bloody code at some point anyway.
             -- 26th June 2015: Still haven't, should get my lazy ass to do it some day
-			-- 18th October 2015: lmao I'll never do this part properly, will I? Well doesn't matter really, atleast the rest of the code gets de-garbaged
+            -- 18th October 2015: lmao I'll never do this part properly, will I? Well doesn't matter really, atleast the rest of the code gets de-garbaged
 
             --Target announcer
             draw.SimpleText(hitman_targetname, "TraitorState", x + 12, y+2, Color(0, 0, 0, 255))
@@ -313,7 +313,7 @@ else -- Client
         elseif punishment == 1 and !revealed then
             chat.AddText(Color(255, 0, 0), "As a result of breaking the contract with your employer he decided to blow your cover with an anonymous phone call.")
         end
-		revealed = true
+        revealed = true
     end
     usermessage.Hook( "hitman_disappointed", Disappointed )
 

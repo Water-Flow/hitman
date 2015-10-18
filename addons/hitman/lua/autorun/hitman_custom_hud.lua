@@ -227,7 +227,7 @@ hook.Add("HUDPaint", "DisplayHitlistHUD", DisplayHitlistHUD)
 
 function SimplisticHealthbar(health)
     if health > 100 then health = 100 end
-	maxhealthbars = 25
+    maxhealthbars = 25
     local temp = ""
     for i = 1,(health/100)*maxhealthbars do
         temp = temp .. "|"
