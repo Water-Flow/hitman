@@ -277,22 +277,31 @@ else -- Client
     local function DisplayHitlistHUD()
         if hitman_targetname and LocalPlayer():Alive() and LocalPlayer():IsTraitor() then
             --basic box
+            local len = string.len("KILL: " .. hitman_targetname)
+            if len < 17 then -- 17 is probably a good number
+                w = 250
+            else
+                w = 250 * len * 0.06 -- adjust the number until it will work fine
+            end
             draw.RoundedBox(8, x, y, w, h, Color(0, 0, 10, 200))
             draw.RoundedBox(8, x, y, w, 30, Color(200, 25, 25, 200))
-
+ 
             --Didn't mind using BadKings ShadowedText. For some reason stuff doesn't properly import. Got to clean up the bloody code at some point anyway.
             -- 26th June 2015: Still haven't, should get my lazy ass to do it some day
             -- 18th October 2015: lmao I'll never do this part properly, will I? Well doesn't matter really, atleast the rest of the code gets de-garbaged
-
+ 
             --Target announcer
-            draw.SimpleText(hitman_targetname, "TraitorState", x + 12, y+2, Color(0, 0, 0, 255))
-            draw.SimpleText(hitman_targetname, "TraitorState", x + 10, y, Color(255, 255, 255, 255))
+            draw.SimpleText("KILL: " .. hitman_targetname, "TraitorState", x + 2 + w/2, y+2, Color(0, 0, 0, 255), TEXT_ALIGN_CENTER)
+            draw.SimpleText("KILL: " .. hitman_targetname, "TraitorState", x + 0 + w/2, y, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER)
             --Stats
             draw.SimpleText("Killed Targets: " .. hitman_targetkills, "HealthAmmo", x + 12, y +42, Color(0, 0, 0, 255))
             draw.SimpleText("Killed Targets: " .. hitman_targetkills, "HealthAmmo", x + 10, y +40, Color(255, 255, 255, 255))
-
+ 
             draw.SimpleText("Killed Civilians: " .. hitman_civkills, "HealthAmmo", x + 12, y + 62, Color(0, 0, 0, 255))
             draw.SimpleText("Killed Civilians: " .. hitman_civkills, "HealthAmmo", x + 10, y + 60, Color(255, 255, 255, 255))
+			
+			draw.SimpleText("Remaining Freekills: " .. hitman_targetkills - hitman_civkills, "HealthAmmo", x + 12, y + 82, Color(0, 0, 0, 255))
+			draw.SimpleText("Remaining Freekills: " .. hitman_targetkills - hitman_civkills, "HealthAmmo", x + 10, y + 80, Color(255, 255, 255, 255))
         end
     end
     hook.Add("HUDPaint", "DisplayHitlistHUD", DisplayHitlistHUD);
