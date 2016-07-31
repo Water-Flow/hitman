@@ -278,7 +278,7 @@ else -- Client
        if hitman_targetname and LocalPlayer():Alive() and LocalPlayer():IsTraitor() then
            --basic box
            surface.SetFont( "TraitorState" )
-           local w = surface.GetTextSize( "KILL" .. hitman_targetname )
+           local w = surface.GetTextSize( "KILL: " .. hitman_targetname )
            -- Give the text a cozy 15px margin if it's too long
            w = w > 220 and ( w +30 ) or 250
            
