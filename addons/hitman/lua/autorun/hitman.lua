@@ -264,50 +264,49 @@ else -- Client
 
     local revealed = false
 
-    --for painting
-    local x = 270
-    local y = ScrH() - 130
+--for painting
+   local x = 270
+   local y = ScrH() - 130
 
-    local w = 250
-    local h = 120
+   local w = 250
+   local h = 120
 
-    usermessage.Hook( "hitman_newtarget", function(um) hitman_targetname = um:ReadString() end)
-    usermessage.Hook( "hitman_notarget", function(um) hitman_targetname = nil end)
+   usermessage.Hook( "hitman_newtarget", function(um) hitman_targetname = um:ReadString() end)
+   usermessage.Hook( "hitman_notarget", function(um) hitman_targetname = nil end)
 
-    local function DisplayHitlistHUD()
-        if hitman_targetname and LocalPlayer():Alive() and LocalPlayer():IsTraitor() then
-            --basic box
-            local len = string.len("KILL: " .. hitman_targetname)
-            if len < 17 then -- 17 is probably a good number
-                w = 250
-            else
-                w = 250 * len * 0.06 -- adjust the number until it will work fine
-            end
-            draw.RoundedBox(8, x, y, w, h, Color(0, 0, 10, 200))
-            draw.RoundedBox(8, x, y, w, 30, Color(200, 25, 25, 200))
- 
-            --Didn't mind using BadKings ShadowedText. For some reason stuff doesn't properly import. Got to clean up the bloody code at some point anyway.
-            -- 26th June 2015: Still haven't, should get my lazy ass to do it some day
-            -- 18th October 2015: lmao I'll never do this part properly, will I? Well doesn't matter really, atleast the rest of the code gets de-garbaged
- 
-            --Target announcer
-            draw.SimpleText("KILL: " .. hitman_targetname, "TraitorState", x + 2 + w/2, y+2, Color(0, 0, 0, 255), TEXT_ALIGN_CENTER)
-            draw.SimpleText("KILL: " .. hitman_targetname, "TraitorState", x + 0 + w/2, y, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER)
-            --Stats
-            draw.SimpleText("Killed Targets: " .. hitman_targetkills, "HealthAmmo", x + 12, y +42, Color(0, 0, 0, 255))
-            draw.SimpleText("Killed Targets: " .. hitman_targetkills, "HealthAmmo", x + 10, y +40, Color(255, 255, 255, 255))
- 
-            draw.SimpleText("Killed Civilians: " .. hitman_civkills, "HealthAmmo", x + 12, y + 62, Color(0, 0, 0, 255))
-            draw.SimpleText("Killed Civilians: " .. hitman_civkills, "HealthAmmo", x + 10, y + 60, Color(255, 255, 255, 255))
-			
-			draw.SimpleText("Remaining Freekills: " .. hitman_targetkills - hitman_civkills, "HealthAmmo", x + 12, y + 82, Color(0, 0, 0, 255))
-			draw.SimpleText("Remaining Freekills: " .. hitman_targetkills - hitman_civkills, "HealthAmmo", x + 10, y + 80, Color(255, 255, 255, 255))
-        end
-    end
-    hook.Add("HUDPaint", "DisplayHitlistHUD", DisplayHitlistHUD);
-    --Fetch stats
-    usermessage.Hook( "hitman_killed_targets", function(um) hitman_targetkills = um:ReadShort() end)
-    usermessage.Hook( "hitman_killed_civs", function(um) hitman_civkills = um:ReadShort() end)
+   local function DisplayHitlistHUD()
+       if hitman_targetname and LocalPlayer():Alive() and LocalPlayer():IsTraitor() then
+           --basic box
+           surface.SetFont( "TraitorState" )
+           local w = surface.GetTextSize( "KILL" .. hitman_targetname )
+           -- Give the text a cozy 15px margin if it's too long
+           w = w > 220 and ( w +30 ) or 250
+           
+           draw.RoundedBox(8, x, y, w, h, Color(0, 0, 10, 200))
+           draw.RoundedBox(8, x, y, w, 30, Color(200, 25, 25, 200))
+
+           --Didn't mind using BadKings ShadowedText. For some reason stuff doesn't properly import. Got to clean up the bloody code at some point anyway.
+           -- 26th June 2015: Still haven't, should get my lazy ass to do it some day
+           -- 18th October 2015: lmao I'll never do this part properly, will I? Well doesn't matter really, atleast the rest of the code gets de-garbaged
+
+           --Target announcer
+           draw.SimpleText("KILL: " .. hitman_targetname, "TraitorState", x + 2 + w/2, y+2, Color(0, 0, 0, 255), TEXT_ALIGN_CENTER)
+           draw.SimpleText("KILL: " .. hitman_targetname, "TraitorState", x + 0 + w/2, y, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER)
+           --Stats
+           draw.SimpleText("Total Targets Killed: " .. hitman_targetkills, "HealthAmmo", x + 12, y +42, Color(0, 0, 0, 255))
+           draw.SimpleText("Total Targets Killed: " .. hitman_targetkills, "HealthAmmo", x + 10, y +40, Color(255, 255, 255, 255))
+
+           draw.SimpleText("Total Civilians Killed: " .. hitman_civkills, "HealthAmmo", x + 12, y + 62, Color(0, 0, 0, 255))
+           draw.SimpleText("Total Civilians Killed: " .. hitman_civkills, "HealthAmmo", x + 10, y + 60, Color(255, 255, 255, 255))
+     
+     draw.SimpleText("Available Freekills: " .. hitman_targetkills - hitman_civkills, "HealthAmmo", x + 12, y + 82, Color(0, 0, 0, 255))
+     draw.SimpleText("Available Freekills: " .. hitman_targetkills - hitman_civkills, "HealthAmmo", x + 10, y + 80, Color(255, 255, 255, 255))
+       end
+   end
+   hook.Add("HUDPaint", "DisplayHitlistHUD", DisplayHitlistHUD);
+   --Fetch stats
+   usermessage.Hook( "hitman_killed_targets", function(um) hitman_targetkills = um:ReadShort() end)
+   usermessage.Hook( "hitman_killed_civs", function(um) hitman_civkills = um:ReadShort() end)
 
     local function SetTraitor(um)
         if um:ReadBool() then chat.AddText(Color(255, 0, 0), "You are a hitman, hired by a mysterious employer who wants a range of people dead. Avoid killing anyone other than the target or your employer will be ... unsatisfied.") end
